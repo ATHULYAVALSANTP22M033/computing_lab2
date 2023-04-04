@@ -126,7 +126,7 @@ if __name__ == '__main__':
     iteration = 100
     damping_factor = 0.15
 
-    graph = init_graph('/content/graph_4.txt')
+    graph = init_graph('graph_4.txt')
 
     PageRank(graph, damping_factor,iteration)
     print(graph.get_pagerank_list())
