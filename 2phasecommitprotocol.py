@@ -2,18 +2,23 @@ class Transaction:
   def __init__(self, transaction_id):
     self.transaction_id = transaction_id
     self.locks = set() # Set of acquired locks
+
   def acquire_lock(self, lock_manager, item):
     if lock_manager.acquire_lock(self, item):
       self.locks.add(item)
       return True
     return False
+
   def release_locks(self, lock_manager):
     for item in self.locks:
       lock_manager.release_lock(self, item)
-      self.locks.clear()
+    self.locks.clear()
+
+
 class LockManager:
   def __init__(self):
     self.lock_table = {}
+
   def acquire_lock(self, transaction, item):
     if item in self.lock_table:
       if self.lock_table[item] is None:
@@ -26,32 +31,42 @@ class LockManager:
     else:
       self.lock_table[item] = transaction
       return True
+
   def release_lock(self, transaction, item):
     if item in self.lock_table and self.lock_table[item] == transaction:
       self.lock_table[item] = None
+
   def print_lock_table(self):
     print("Lock Table:")
     for item, transaction in self.lock_table.items():
       print(f"{item}: {transaction.transaction_id if transaction else 'None'}")
+
+
 # Example usage
 if __name__ == '__main__':
   lock_manager = LockManager()
+
 t1 = Transaction("T1")
 t2 = Transaction("T2")
 t3 = Transaction("T3")
+
 # Transaction 1 acquires locks
 if t1.acquire_lock(lock_manager, "item1"):
   print("T1 acquired lock on item1")
 if t1.acquire_lock(lock_manager, "item2"):
   print("T1 acquired lock on item2")
+
 lock_manager.print_lock_table() # Print current lock table
+
 # Transaction 2 tries to acquire a conflicting lock
 if t2.acquire_lock(lock_manager, "item1"):
   print("T2 acquired lock on item1")
 else:
   print("T2 failed to acquire lock on item1")
+
 # Transaction 1 releases locks
 t1.release_locks(lock_manager)
+
 lock_manager.print_lock_table() # Print updated lock table
 
 
